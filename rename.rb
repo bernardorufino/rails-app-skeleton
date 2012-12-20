@@ -53,4 +53,4 @@ rename 'config/environments/development.rb',       application_gsub
 rename 'config/environments/test.rb',              application_gsub
 rename 'config/environments/production.rb',        application_gsub
 
-puts "Done"
+puts "\nDone"
