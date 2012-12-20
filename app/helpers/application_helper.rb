@@ -5,8 +5,7 @@ module ApplicationHelper
     (content_for?(:title)) ? "#{TITLE} | #{content_for(:title)}" : TITLE;
   end
 
-  # Follow Bootstrap convention
-  # flash[type] = message
+  # Bootstrap convention: flash[type] = message
   # type = :success, :info, :alert or :error
   def flash_messages
     flash.to_a.inject("".html_safe) do |code, (type, message)|
