@@ -20,6 +20,7 @@ end
 def rename(file, opts)
   regexp, subst = *opts.to_a.first;
   gsub_file(file, regexp, subst);
+  print ".";
 end
 
 def current_name
@@ -38,6 +39,8 @@ end
 name = Regexp.escape(old_name);
 application_gsub = {/#{name}::Application/mi => "#{new_name}::Application"};
 
+puts "Renaming to #{new_name}"
+
 rename 'app/views/layouts/application.html.erb',   /#{name}/mi => new_name
 rename 'config/application.rb',                    /module #{name}/mi => "module #{new_name}" 
 rename 'config/environment.rb',                    application_gsub
@@ -49,3 +52,5 @@ rename 'Rakefile',                                 application_gsub
 rename 'config/environments/development.rb',       application_gsub
 rename 'config/environments/test.rb',              application_gsub
 rename 'config/environments/production.rb',        application_gsub
+
+puts "Done"

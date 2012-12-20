@@ -1,1 +1,1 @@
-# Readme
+# Skeleton to be used in new projects```bashgit clone git://github.com/bernardorufino/rails-app-skeleton.git ProjectNamecd ProjectNamerm -R -f .gitruby rename.rb ProjectNamegit init```and then edit this README.md
