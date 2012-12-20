@@ -13,5 +13,13 @@ module ApplicationHelper
       code + content_tag(:p, message, class: html_class);
     end
   end
+  
+  def icon(name, opts={})
+    w, h = *{
+      /^s_/ => [16, 16],
+      /^g_/ => [24, 24]
+    }.detect{|pattern, size| name =~ pattern }.last
+    image_tag("icons/#{name}.png", {width: w, height: h, class: "icon"}.merge(opts));
+  end
 
 end
