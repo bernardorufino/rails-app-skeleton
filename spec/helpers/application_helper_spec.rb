@@ -81,7 +81,7 @@ describe ApplicationHelper do
   describe "button" do
   
     shared_examples "stylized button" do
-      it { should have_selector('button.btn[type="button"]', text: "Sample") }  
+      it { should have_selector('button.btn', text: "Sample") }  
     end
   
     context "when given only content" do
@@ -113,6 +113,46 @@ describe ApplicationHelper do
       subject { helper.button("Sample", class: ['extra-class1', 'extra-class2']).capybara }
       it_should_behave_like "stylized button"
       it { should have_selector('.extra-class1.extra-class2') }
+    end
+  
+    context "when given content and no type attribute" do
+      subject { helper.button("Sample").capybara } 
+      it { should have_selector('button[type="button"]') }
+    end
+    
+    context "when given content and type attribute" do
+      subject { helper.button("Sample", type: 'submit').capybara } 
+      it_should_behave_like "stylized button"
+      it { should have_selector('button[type="submit"]') }
+    end
+  
+  end
+  
+  describe "button_to" do
+  
+    context "when given path and content as string" do
+      subject { helper.button_to("Content", '/path').capybara }
+      it { should have_selector('.btn') }
+    end
+    
+    context "when given path and content as block" do
+      subject { helper.button_to('/path'){"Content"}.capybara }
+      it { should have_selector('.btn') }
+    end
+    
+    context "when given path, content and extra class" do
+      subject { helper.button_to("Content", '/path', class: 'extra-class').capybara }
+      it { should have_selector('.btn.extra-class') }
+    end
+    
+    context "when given path, content and extra classes as string" do
+      subject { helper.button_to("Content", '/path', class: 'extra-class1 extra-class2').capybara }
+      it { should have_selector('.btn.extra-class1.extra-class2') }
+    end
+  
+    context "when given path, content and extra class as array" do
+      subject { helper.button_to("Content", '/path', class: ['extra-class1', 'extra-class2']).capybara }
+      it { should have_selector('.btn.extra-class1.extra-class2') }
     end
   
   end

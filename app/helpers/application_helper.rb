@@ -14,26 +14,44 @@ module ApplicationHelper
     end
   end
   
-  def icon(name, opts={})
+  def icon(name, options={})
     w, h = *{
       /^s_/ => [16, 16],
       /^g_/ => [24, 24]
     }.detect{|pattern, size| name =~ pattern }.last
-    image_tag("icons/#{name}.png", {width: w, height: h, class: "icon"}.merge(opts));
+    image_tag("icons/#{name}.png", {width: w, height: h, class: "icon"}.merge(options));
   end
   
-  # button(type, content(, opts))
-  # button(content(, opts))
+  # button(type, content(, options))
+  # button(content(, options))
   # See spec for more details on usage
   def button(*args)
-    opts = (args.last.is_a?(Hash)) ? args.pop : {};
+    options = (args.last.is_a?(Hash)) ? args.pop : {};
     content = args.delete_at(1).try(:to_s) || args.shift.to_s;
-    class_names = (args.first) ?  ['btn', "btn-#{args.first}"] : ['btn'];
-    if opts.key?(:class)
-      classes = opts.delete(:class);
-      class_names += classes.is_a?(Array) ? classes : classes.to_s.split(" ");
+    classes = (args.first) ?  ['btn', "btn-#{args.first}"] : ['btn'];
+    classes += extract_classes!(options);
+    button_tag(content, {type: 'button'}.merge(options.merge(:class => classes)));
+  end
+  
+  def button_to(*args, &block)
+    if block_given?
+      button_to(capture(&block), *args);
+    else
+      content, options, html_options = *args;
+      return link_to(content, options, {class: 'btn'}) if not html_options;
+      classes = ['btn'] + extract_classes!(html_options);
+      link_to(content, options, {class: classes}.merge(html_options));
     end
-    button_tag(content, opts.merge(:class => class_names, :type => 'button'));
+  end
+
+  protected
+  def extract_classes!(options)
+    if options.key?(:class)
+      classes = options.delete(:class);
+      (classes.is_a?(Array)) ? classes : classes.to_s.split(" ");
+    else
+      []
+    end
   end
 
 end
