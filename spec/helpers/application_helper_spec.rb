@@ -51,7 +51,7 @@ describe ApplicationHelper do
     
     end
    
-  end # describe "flash_messages" do
+  end
   
   describe "icon" do
     
@@ -75,6 +75,45 @@ describe ApplicationHelper do
         height: 42
       };      
     end    
+  
+  end
+  
+  describe "button" do
+  
+    shared_examples "stylized button" do
+      it { should have_selector('button.btn[type="button"]', text: "Sample") }  
+    end
+  
+    context "when given only content" do
+      subject { helper.button("Sample").capybara }  
+      it_should_behave_like "stylized button"
+    end
+    
+    # :primary, :info, :success, :warning, :danger, :inverse, :link
+    type = :primary; 
+    context "when given type and content" do
+      subject { helper.button(type, "Sample").capybara }
+      it_should_behave_like "stylized button"
+      it { should have_selector(".btn-#{type}", text: "Sample") }
+    end
+    
+    context "when given content and extra class as string" do
+      subject { helper.button("Sample", class: 'extra-class').capybara }
+      it_should_behave_like "stylized button"
+      it { should have_selector('.extra-class') }
+    end
+    
+    context "when given content and extra classes as string" do
+      subject { helper.button("Sample", class: 'extra-class1 extra-class2').capybara }
+      it_should_behave_like "stylized button"
+      it { should have_selector('.extra-class1.extra-class2') }
+    end
+  
+    context "when given content and extra classes as array" do
+      subject { helper.button("Sample", class: ['extra-class1', 'extra-class2']).capybara }
+      it_should_behave_like "stylized button"
+      it { should have_selector('.extra-class1.extra-class2') }
+    end
   
   end
 

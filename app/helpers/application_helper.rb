@@ -21,5 +21,19 @@ module ApplicationHelper
     }.detect{|pattern, size| name =~ pattern }.last
     image_tag("icons/#{name}.png", {width: w, height: h, class: "icon"}.merge(opts));
   end
+  
+  # button(type, content(, opts))
+  # button(content(, opts))
+  # See spec for more details on usage
+  def button(*args)
+    opts = (args.last.is_a?(Hash)) ? args.pop : {};
+    content = args.delete_at(1).try(:to_s) || args.shift.to_s;
+    class_names = (args.first) ?  ['btn', "btn-#{args.first}"] : ['btn'];
+    if opts.key?(:class)
+      classes = opts.delete(:class);
+      class_names += classes.is_a?(Array) ? classes : classes.to_s.split(" ");
+    end
+    button_tag(content, opts.merge(:class => class_names, :type => 'button'));
+  end
 
 end
