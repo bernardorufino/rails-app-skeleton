@@ -29,8 +29,8 @@ module ApplicationHelper
     options = (args.last.is_a?(Hash)) ? args.pop : {};
     content = args.delete_at(1).try(:to_s) || args.shift.to_s;
     classes = (args.first) ?  ['btn', "btn-#{args.first}"] : ['btn'];
-    classes += extract_classes!(options);
-    button_tag(content, {type: 'button'}.merge(options.merge(:class => classes)));
+    insert_classes!(options, classes);
+    button_tag(content, {type: 'button'}.merge(options));
   end
   
   def button_to(*args, &block)
@@ -39,19 +39,17 @@ module ApplicationHelper
     else
       content, options, html_options = *args;
       return link_to(content, options, {class: 'btn'}) if not html_options;
-      classes = ['btn'] + extract_classes!(html_options);
-      link_to(content, options, {class: classes}.merge(html_options));
+      insert_classes!(html_options, 'btn');
+      link_to(content, options, html_options);
     end
   end
 
-  protected
-  def extract_classes!(options)
-    if options.key?(:class)
-      classes = options.delete(:class);
-      (classes.is_a?(Array)) ? classes : classes.to_s.split(" ");
-    else
-      []
-    end
+  def nav(options={}, &block)
+    itens_properties = options.delete(:itens) || {};
+    proxy = NavProxy.new(self, itens_properties, &method(:current_page?));
+    tag = options.delete(:tag) || 'ul';
+    content = (block_given?) ? capture(proxy, &block) : "";
+    insert_classes!(options, 'nav');
+    content_tag(tag, content, options);
   end
-
 end

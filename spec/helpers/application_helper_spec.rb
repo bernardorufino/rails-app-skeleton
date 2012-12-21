@@ -97,22 +97,10 @@ describe ApplicationHelper do
       it { should have_selector(".btn-#{type}", text: "Sample") }
     end
     
-    context "when given content and extra class as string" do
+    context "when given content and extra class" do
       subject { helper.button("Sample", class: 'extra-class').capybara }
       it_should_behave_like "stylized button"
       it { should have_selector('.extra-class') }
-    end
-    
-    context "when given content and extra classes as string" do
-      subject { helper.button("Sample", class: 'extra-class1 extra-class2').capybara }
-      it_should_behave_like "stylized button"
-      it { should have_selector('.extra-class1.extra-class2') }
-    end
-  
-    context "when given content and extra classes as array" do
-      subject { helper.button("Sample", class: ['extra-class1', 'extra-class2']).capybara }
-      it_should_behave_like "stylized button"
-      it { should have_selector('.extra-class1.extra-class2') }
     end
   
     context "when given content and no type attribute" do
@@ -132,27 +120,95 @@ describe ApplicationHelper do
   
     context "when given path and content as string" do
       subject { helper.button_to("Content", '/path').capybara }
-      it { should have_selector('.btn') }
+      it { should have_selector('a.btn') }
     end
     
     context "when given path and content as block" do
       subject { helper.button_to('/path'){"Content"}.capybara }
-      it { should have_selector('.btn') }
+      it { should have_selector('a.btn') }
     end
     
     context "when given path, content and extra class" do
       subject { helper.button_to("Content", '/path', class: 'extra-class').capybara }
-      it { should have_selector('.btn.extra-class') }
-    end
-    
-    context "when given path, content and extra classes as string" do
-      subject { helper.button_to("Content", '/path', class: 'extra-class1 extra-class2').capybara }
-      it { should have_selector('.btn.extra-class1.extra-class2') }
+      it { should have_selector('a.btn.extra-class') }
     end
   
-    context "when given path, content and extra class as array" do
-      subject { helper.button_to("Content", '/path', class: ['extra-class1', 'extra-class2']).capybara }
-      it { should have_selector('.btn.extra-class1.extra-class2') }
+  end
+  
+#  <%= nav :class => 'nav-list' do |m| %>
+#    
+#    <%= m.link_to "Nome", root_path %>
+#    <%= m.item do %>
+#      No liink here folks
+#    <% end %>
+#    
+#    <%= m.button_to "Buttom", root_path %>
+#    
+#  <% end %>
+  
+  describe "nav" do
+    include Capybara::DSL;
+    
+    let(:current_path) { page_path(:home) }
+    before { visit current_path }
+    
+    subject do
+      sample_class = 'sample-class';
+      sample_classes = ['sample-class1', 'sample-class2'];
+      helper.nav(id: 'foo', class: 'bar') do |m|
+        m.item(id: 'home').link_to("Home", '/')                                  +  
+        m.header { "Header" }                                                    +
+        m.header(class: 'sample-class') { "Header" }                             +
+        m.divider                                                                +
+        m.divider(class: sample_class)                                           +
+        m.disabled.link_to("Disabled", '/disabled')                              +
+        m.link_to("Page", '/page')                                               +
+        m.link_to("Current", current_path)                                       +
+        m.item(class: 'sample-class').disabled.link_to("Current", current_path)  +
+        m.item(class: 'sample-class') { "<span>Generic</span>".html_safe }  
+      end.capybara
+    end
+    
+    it { should have_selector('ul#foo.bar.nav'                                                                     ) }
+    it { should have_selector('ul li#home a[href="/"]'                                          , text: "Home"     ) }
+    it { should have_selector('ul li.nav-header'                                                , text: "Header"   ) }
+    it { should have_selector('ul li.nav-header.sample-class'                                   , text: "Header"   ) }
+    it { should have_selector('ul li.divider'                                                                      ) }
+    it { should have_selector('ul li.divider.sample-class'                                                         ) }
+    it { should have_selector('ul li.disabled a[href="/disabled"]'                              , text: "Disabled" ) }
+    it { should have_selector('ul li a[href="/page"]'                                           , text: "Page"     ) }
+    it { should have_selector("ul li.active a[href=\"#{current_path}\"]"                        , text: "Current"  ) }
+    it { should have_selector("ul li.sample-class.disabled.active a[href=\"#{current_path}\"]"  , text: "Current"  ) }
+    it { should have_selector('ul li.sample-class span'                                         , text: "Generic"  ) }
+  
+    context "when tag ol is given" do
+      subject { helper.nav(tag: 'ol').capybara }
+      it { should have_selector('ol') }
+    end
+    
+    context "when calls are wrapped with 'with' method" do
+      subject do 
+        helper.nav do |m|
+          m.with class: 'sample-class' do |m|
+            m.item(class: 'sample-class2') { "<span>Generic</span>" } + 
+            m.link_to("Page", "/page")
+          end
+        end.capybara
+      end
+      it { should have_selector('ul li.sample-class.sample-class2 span', text: "Generic") }
+      it { should have_selector('ul li.sample-class a[href="/page"]', text: "Page") }
+    end
+  
+    context "when given :itens => {html_props} option" do
+      subject do 
+        helper.nav(:itens => {class: 'sample-class'}) do |m|
+          m.item(class: 'sample-class2') { "<span>Generic</span>".html_safe } + 
+          m.link_to("Page", "/page")
+        end
+      end
+    it { scream(subject.to_s) }
+      it { should have_selector('ul li.sample-class.sample-class2 span', text: "Generic") }
+      it { should have_selector('ul li.sample-class a[href="/page"]', text: "Page") }
     end
   
   end
