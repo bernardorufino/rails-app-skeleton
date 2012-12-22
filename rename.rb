@@ -48,6 +48,7 @@ rename 'config/routes.rb',                         application_gsub
 rename 'config.ru',                                application_gsub
 rename 'config/initializers/secret_token.rb',      application_gsub
 rename 'config/initializers/session_store.rb',     application_gsub
+rename 'config/initializers/load_libs.rb',         application_gsub
 rename 'Rakefile',                                 application_gsub
 rename 'config/environments/development.rb',       application_gsub
 rename 'config/environments/test.rb',              application_gsub
