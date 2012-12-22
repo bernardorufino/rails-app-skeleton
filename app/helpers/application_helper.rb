@@ -29,19 +29,19 @@ module ApplicationHelper
     options = (args.last.is_a?(Hash)) ? args.pop : {};
     content = args.delete_at(1).try(:to_s) || args.shift.to_s;
     classes = (args.first) ?  ['btn', "btn-#{args.first}"] : ['btn'];
-    insert_classes!(options, classes);
+    options = insert_classes(options, classes);
     button_tag(content, {type: 'button'}.merge(options));
   end
   
+  # Rails default button_to turns into form_button_to
+  ActionView::Base.send :alias_method, :form_button_to, :button_to
+  
   def button_to(*args, &block)
-    if block_given?
-      button_to(capture(&block), *args);
-    else
-      content, options, html_options = *args;
-      return link_to(content, options, {class: 'btn'}) if not html_options;
-      insert_classes!(html_options, 'btn');
-      link_to(content, options, html_options);
-    end
+    return button_to(capture(&block), *args) if block_given?
+    content, options, html_options = *args;
+    return link_to(content, options, {class: 'btn'}) if not html_options;
+    html_options = insert_classes(html_options, 'btn');
+    link_to(content, options, html_options);
   end
 
   def nav(options={}, &block)
@@ -49,7 +49,8 @@ module ApplicationHelper
     proxy = NavProxy.new(self, itens_properties, &method(:current_page?));
     tag = options.delete(:tag) || 'ul';
     content = (block_given?) ? capture(proxy, &block) : "";
-    insert_classes!(options, 'nav');
+    options = insert_classes(options, 'nav');
     content_tag(tag, content, options);
   end
+  
 end

@@ -1,14 +1,15 @@
-class NavProxy
+# Tested in ApplicationHelper#nav
+class NavProxy 
   include GlobalHelper;
   CHILD_TAG = 'li';
   EMPTY_CONTENT = Proc.new { "" };
 
-  def initialize(view_proxy, default_properties={}, &block)
-    @default_properties = default_properties;
+  def initialize(view_proxy, default_attributes={}, &block)
+    @default_attributes = default_attributes;
     @current_page_test = block;
     @view_proxy = view_proxy;
     @html = "";
-    reset_properties;
+    reset_attributes;
   end
   
   def link_to(*args, &block)
@@ -23,8 +24,8 @@ class NavProxy
     end
   end
   
-  def item(properties={}, &block)
-    set_properties(properties);
+  def item(attributes={}, &block)
+    set_attributes(attributes);
     (block_given?) ? render_item(&block) : self;
   end
   
@@ -32,25 +33,26 @@ class NavProxy
     render_item { "" }
   end
   
-  def divider(properties={})
-    insert_classes!(properties, 'divider');
-    item(properties);
+  def divider(attrs={})
+    item(insert_classes(attrs, 'divider'));
   end
   
-  def disabled(properties={})
-    insert_classes!(properties, 'disabled');
-    item(properties);
+  def disabled(attrs={})
+    item(insert_classes(attrs, 'disabled'));
   end
   
-  def header(properties={}, &block)
-    insert_classes!(properties, 'nav-header');
-    item(properties, &block);
+  def header(attrs={}, &block)
+    item(insert_classes(attrs, 'nav-header'), &block);
   end
   
-  #def head(content, *args)
-  #  header(*args) { content };
-  #end
-
+  def with(attrs, &block)
+    defaults = @default_attributes;
+    @default_attributes.html_merge!(attrs);
+    html = capture(self, &block);
+    @default_attributes = defaults;
+    html.html_safe;
+  end
+  
   protected
   def capture(*args, &block)
     @view_proxy.capture(*args, &block);
@@ -61,19 +63,19 @@ class NavProxy
   end
   
   def render_item(&block)
-    content = capture(&block).html_safe;
-    @html = @view_proxy.content_tag(CHILD_TAG, content, @properties).html_safe;
-    reset_properties;
+    content = capture(&block);
+    @html = @view_proxy.content_tag(CHILD_TAG, content, @attributes);
+    @html = "\t#{@html}".html_safe;
+    reset_attributes;
     @html;
   end
   
-  # REFACTOR merge_html..., merge_...
-  def set_properties(properties)
-    @properties = merge_html_properties(from: properties, into: @properties);
+  def set_attributes(attributes)
+    @attributes = @attributes.html_merge(attributes);
   end
   
-  def reset_properties
-    @properties = @default_properties;
+  def reset_attributes
+    @attributes = @default_attributes;
   end
 
 end

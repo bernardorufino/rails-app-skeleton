@@ -6,7 +6,7 @@ describe ApplicationHelper do
   
     context "when view doesn't specify custom title'" do
       subject { helper.title }
-      it { should eq(ApplicationHelper::TITLE) }
+      it { should == ApplicationHelper::TITLE }
     end
     
     context "when view specifies custom title" do
@@ -61,9 +61,9 @@ describe ApplicationHelper do
       let(:img) { subject.find('img') }
       
       it { should have_selector('img.icon') }
-      specify { img['width'].should eq(width.to_s) }
-      specify { img['height'].should eq(height.to_s) }
-      specify { img['src'].should eq(icon_path("#{icon}.png")) }    
+      specify { img['width'].should == width.to_s }
+      specify { img['height'].should == height.to_s }
+      specify { img['src'].should == icon_path("#{icon}.png") }    
     end
     
     it_should_behave_like "icon", 'g_play', size: [24, 24];
@@ -133,34 +133,21 @@ describe ApplicationHelper do
       it { should have_selector('a.btn.extra-class') }
     end
   
-  end
-  
-#  <%= nav :class => 'nav-list' do |m| %>
-#    
-#    <%= m.link_to "Nome", root_path %>
-#    <%= m.item do %>
-#      No liink here folks
-#    <% end %>
-#    
-#    <%= m.button_to "Buttom", root_path %>
-#    
-#  <% end %>
-  
+  end  
+
   describe "nav" do
     include Capybara::DSL;
     
     let(:current_path) { page_path(:home) }
-    before { visit current_path }
+    before { controller.request.path = current_path }
     
     subject do
-      sample_class = 'sample-class';
-      sample_classes = ['sample-class1', 'sample-class2'];
       helper.nav(id: 'foo', class: 'bar') do |m|
         m.item(id: 'home').link_to("Home", '/')                                  +  
         m.header { "Header" }                                                    +
         m.header(class: 'sample-class') { "Header" }                             +
         m.divider                                                                +
-        m.divider(class: sample_class)                                           +
+        m.divider(class: 'sample-class')                                           +
         m.disabled.link_to("Disabled", '/disabled')                              +
         m.link_to("Page", '/page')                                               +
         m.link_to("Current", current_path)                                       +
@@ -169,17 +156,18 @@ describe ApplicationHelper do
       end.capybara
     end
     
-    it { should have_selector('ul#foo.bar.nav'                                                                     ) }
-    it { should have_selector('ul li#home a[href="/"]'                                          , text: "Home"     ) }
-    it { should have_selector('ul li.nav-header'                                                , text: "Header"   ) }
-    it { should have_selector('ul li.nav-header.sample-class'                                   , text: "Header"   ) }
-    it { should have_selector('ul li.divider'                                                                      ) }
-    it { should have_selector('ul li.divider.sample-class'                                                         ) }
-    it { should have_selector('ul li.disabled a[href="/disabled"]'                              , text: "Disabled" ) }
-    it { should have_selector('ul li a[href="/page"]'                                           , text: "Page"     ) }
-    it { should have_selector("ul li.active a[href=\"#{current_path}\"]"                        , text: "Current"  ) }
-    it { should have_selector("ul li.sample-class.disabled.active a[href=\"#{current_path}\"]"  , text: "Current"  ) }
-    it { should have_selector('ul li.sample-class span'                                         , text: "Generic"  ) }
+    it { should have_selector('ul#foo.bar.nav' ) }
+    it { should have_selector('ul li#home a[href="/"]', text: "Home") }
+    it { should have_selector('ul li.nav-header', text: "Header") }
+    it { should have_selector('ul li.nav-header.sample-class', text: "Header") }
+    it { should_not have_selector('ul li.divider.nav-header') }
+    it { should have_selector('ul li.divider') }
+    it { should have_selector('ul li.divider.sample-class') }
+    it { should have_selector('ul li.disabled a[href="/disabled"]', text: "Disabled") }
+    it { should have_selector('ul li a[href="/page"]', text: "Page") }
+    it { should have_selector("ul li.active a[href=\"#{current_path}\"]", text: "Current") }
+    it { should have_selector("ul li.sample-class.disabled.active a[href=\"#{current_path}\"]", text: "Current") }
+    it { should have_selector('ul li.sample-class span', text: "Generic") }
   
     context "when tag ol is given" do
       subject { helper.nav(tag: 'ol').capybara }
@@ -189,28 +177,16 @@ describe ApplicationHelper do
     context "when calls are wrapped with 'with' method" do
       subject do 
         helper.nav do |m|
-          m.with class: 'sample-class' do |m|
-            m.item(class: 'sample-class2') { "<span>Generic</span>" } + 
+          m.with(class: 'sample-class') do |m|
+            m.item(class: 'sample-class2') { "<span>Generic</span>".html_safe } + 
             m.link_to("Page", "/page")
           end
         end.capybara
       end
       it { should have_selector('ul li.sample-class.sample-class2 span', text: "Generic") }
       it { should have_selector('ul li.sample-class a[href="/page"]', text: "Page") }
-    end
-  
-    context "when given :itens => {html_props} option" do
-      subject do 
-        helper.nav(:itens => {class: 'sample-class'}) do |m|
-          m.item(class: 'sample-class2') { "<span>Generic</span>".html_safe } + 
-          m.link_to("Page", "/page")
-        end
-      end
-    it { scream(subject.to_s) }
-      it { should have_selector('ul li.sample-class.sample-class2 span', text: "Generic") }
-      it { should have_selector('ul li.sample-class a[href="/page"]', text: "Page") }
-    end
-  
+    end 
+    
   end
 
 end
