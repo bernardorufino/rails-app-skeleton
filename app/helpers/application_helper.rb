@@ -6,9 +6,10 @@ module ApplicationHelper
   end
 
   # Bootstrap convention: flash[type] = message
-  # type = :success, :info, :alert or :error
+  # type = :success (or :notice), :info, :alert or :error
   def flash_messages
     flash.to_a.inject("".html_safe) do |code, (type, message)|
+      type = :success if type.to_sym == :notice;
       html_class = (type.to_sym == :alert) ? "alert" : "alert alert-#{type}";
       code + content_tag(:p, message, class: html_class);
     end
@@ -16,7 +17,7 @@ module ApplicationHelper
   
   def icon(name, attrs={})
     if name =~ /^g_(white_)?(.+)$/
-      # Cannot invert orders, 2 lines below, because #gsub sets new $1
+      # String#gsub sets new $1
       classes = ($1) ? ['icon-white'] : [];
       classes << "icon-#{$2.gsub('_', '-')}";
       content_tag(:i, "", insert_classes(attrs, classes));

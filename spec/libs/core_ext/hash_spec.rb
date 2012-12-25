@@ -1,6 +1,6 @@
 describe Hash do
 
-  describe "html_merge" do
+  describe "#html_merge" do
     
     c1 = 'sample-class1'
     c2 = 'class2'
@@ -25,9 +25,7 @@ describe Hash do
         it "should have classes #{expected_classes.join(', ')}" do
           subject.to_set.should == expected_classes.to_set
         end
-        it "should have #{expected_classes.size} classes" do
-          subject.size.should == expected_classes.size
-        end        
+        its(:size) { should == expected_classes.size }
       end
     end
     

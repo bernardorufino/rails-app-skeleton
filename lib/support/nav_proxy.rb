@@ -2,7 +2,6 @@
 class NavProxy 
   include GlobalHelper;
   CHILD_TAG = 'li';
-  EMPTY_CONTENT = Proc.new { "" };
 
   def initialize(view_proxy, default_attributes={}, &block)
     @default_attributes = default_attributes;
