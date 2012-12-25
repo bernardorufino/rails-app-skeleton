@@ -13,6 +13,10 @@ group :development, :test do
 end
 
 group :development do
+  # See https://github.com/charliesome/better_errors
+  gem 'better_errors'
+  gem 'binding_of_caller'
+  
   gem 'sqlite3'
   
 end

@@ -40,9 +40,15 @@ module RailsAppSkeleton
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
 
-    # Factory girl instead of fixtures by default
     config.generators do |g|
-      g.fixture_replacement :factory_girl
+      # Not needed since it's using rspec-rails, but just to ensure
+      g.test_framework :rspec
+      # Factory girl instead of fixtures
+      g.fixture_replacement :factory_girl, dir: 'spec/factories'
+      # Stop creating assets/stylesheets/<controller>.css.scss files 
+      g.stylesheets false
+      # Stop creating assets/javascripts/<controller>.js.coffee files 
+      g.javascripts false
     end
     
     # Configure the default encoding used in templates for Ruby 1.9.

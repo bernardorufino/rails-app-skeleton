@@ -1,10 +1,5 @@
-FactoryGirl.define do
+# Or delete this file and use factories/<model-plural>.rb like factories/user.rb
 
-#	factory :user do
-#		name "Bernardo Rufino"
-#		email "bermonruf@gmail.com"
-#		password "123456"
-#		password_confirmation "123456"
-#	end
+FactoryGirl.define do
 
 end
