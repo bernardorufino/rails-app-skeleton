@@ -38,13 +38,23 @@ module RailsAppSkeleton
 
     # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
-    # config.i18n.default_locale = :de
+    config.i18n.default_locale = :pt
+    
+    # Only loading the used ones
+    config.i18n.available_locales = [:en, :pt]
 
     config.generators do |g|
-      # Not needed since it's using rspec-rails, but just to ensure
-      g.test_framework :rspec
+      # If without options (only g.test_framework :rspec) it's not needed since we're using rspec-rails
+      g.test_framework :rspec,
+        view_specs: false,         # Generate view specs
+        request_specs: true,       # Generate request specs (must be inside spec/features)
+        controller_specs: false,   # Generate controller specs
+        helper_spec: true,         # Generate helper specs
+        routing_specs: false       # Generate routing specs
+      
       # Factory girl instead of fixtures
       g.fixture_replacement :factory_girl, dir: 'spec/factories'
+      
       # Stop creating assets/stylesheets/<controller>.css.scss files 
       g.stylesheets false
       # Stop creating assets/javascripts/<controller>.js.coffee files 
@@ -80,5 +90,10 @@ module RailsAppSkeleton
     # Avoid Heroku rake:precompile problems
     # See https://devcenter.heroku.com/articles/rails3x-asset-pipeline-cedar#troubleshooting
     config.assets.initialize_on_precompile = false
+    
+    # Using windows cmd? Uncomment below to avoid strange chars in log files
+    # config.colorize_logging = false
+    # Or use win32console gem
+    # Or use GIT Bash, which you probably already have :)
   end
 end
