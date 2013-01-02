@@ -1,8 +1,14 @@
 module ApplicationHelper
   TITLE = "Base Title";
 
-  def title
-    (content_for?(:title)) ? "#{TITLE} | #{content_for(:title)}" : TITLE;
+  def title(title=nil, &block)
+    if title
+      provide(:title, title);
+      content = content_tag(:h2, title);
+      content += capture(&block) if block_given?;
+      content_for(:heading, content_tag(:div, content, class: 'title').html_safe);
+    end    
+    (content_for?(:title)) ? "#{content_for(:title)} | #{TITLE}" : TITLE;
   end
 
   # Bootstrap convention: flash[type] = message
@@ -55,6 +61,20 @@ module ApplicationHelper
     html_options = insert_classes(html_options, 'btn');
     link_to(content, options, html_options);
   end
+  
+  def submit_button(*args)
+    custom_button({type: 'submit'}, *args)
+  end
+  
+  def reset_button(*args)
+    custom_button({type: 'reset'}, *args)
+  end
+  
+  def form_controls(&block)
+    content_tag(:div, class: 'controls-group') do
+      content_tag(:div, class: 'controls', &block)      
+    end.html_safe
+  end
 
   def nav(options={}, &block)
     itens_properties = options.delete(:itens) || {};
@@ -65,5 +85,13 @@ module ApplicationHelper
     options = insert_classes(options, 'nav') if nav;
     content_tag(tag, content, options);
   end    
+  
+  protected
+  def custom_button(default_options, *args)
+    options = (args.last.is_a?(Hash)) ? args.pop : {};
+    options = default_options.merge(options);
+    args << options;
+    button(*args);
+  end
   
 end
