@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '3.2.11'
+gem 'rails', '3.2.13'
 
 gem 'jquery-rails'
 gem 'rails-i18n'
@@ -9,6 +9,9 @@ gem 'bcrypt-ruby', '>= 3.0'
 gem 'bootstrap-sass', '~> 2.2.2.0'
 # gem 'devise', '~> 2.2'
 # gem 'devise-i18n'
+
+#  Explicit asking for nokogiri, see https://github.com/jnicklas/capybara/issues/882
+gem 'nokogiri', '>= 1.5.6'
 
 group :development, :test do
   gem 'sqlite3'
@@ -22,7 +25,7 @@ end
 
 group :development do
   gem 'better_errors'
-  gem 'binding_of_caller'
+  gem 'binding_of_caller', '>= 0.7.1'
   
   # If you want full featured Guard, also uncomment your system 
   # dependent gems in test group
@@ -33,7 +36,7 @@ group :development do
 end
 
 group :test do 
-  gem 'shoulda-matchers', '>= 1.4.2'
+  gem 'shoulda-matchers', '>= 1.5.2'
   gem 'capybara', '>= 2.0'
   
   # Guard on MAC OSX

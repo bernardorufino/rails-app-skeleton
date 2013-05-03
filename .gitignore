@@ -10,6 +10,9 @@ config/database.yml
 /log/*.log
 /tmp
 
+# Ignore RubyMine
+/.idea
+
 # Ignore other unneeded files.
 doc/
 *~
